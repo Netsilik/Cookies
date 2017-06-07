@@ -15,7 +15,10 @@
     "require": {
         "php": "^5.5.0 || ^7.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
+    },
     "autoload": {
-        "psr-4": { "Netsilik\\Lib\\": "src/" }
+        "psr-4": { "Netsilik\\Lib\\": "app/src/" }
     }
 }

@@ -13,19 +13,31 @@ namespace Netsilik\Lib;
  * Controls all cookies
  */
 class Cookies {
-	private static $instance = null;
-	private $cookies; // cookies to send
-	private $cookieData; // cookies received
+	
+	/**
+	 * @var Netsilik\Lib\Cookies $_instance
+	 */
+	private static $_instance;
+	
+	/**
+	 * @var array $_cookies The cookies to send
+	 */
+	private $_cookies;
+	
+	/**
+	 * @var Netsilik\Lib\Cookies $_instance The cookies received
+	 */
+	private $_cookieData;
 	
 	/**
 	 * Get the (static) instance of this object
 	 * @return Object static instance of class Config
 	 */
 	public static function getInstance() {
-		if (is_null(self::$instance)) {
-			self::$instance = new Cookies();
+		if (is_null(self::$_instance)) {
+			self::$_instance = new Cookies();
 		}
-		return self::$instance;
+		return self::$_instance;
 	}
 	
 	/**
@@ -41,14 +53,14 @@ class Cookies {
 	 * @note if this method returns true, php did not encounter any problems. This does not mean the cookie is accepted by the browser
 	 */
 	public function set($name, $value = '', $expire = false, $path = '', $domain = '', $secure = false, $httpOnly = false) {
-		$this->cookies[$name]['value'] = base64_encode($value);
-		$this->cookies[$name]['expire'] = $expire;
-		$this->cookies[$name]['path'] = $path;
-		$this->cookies[$name]['domain'] = $domain;
-		$this->cookies[$name]['secure'] = $secure;
-		$this->cookies[$name]['httponly'] = $httpOnly;
+		$this->_cookies[$name]['value'] = base64_encode($value);
+		$this->_cookies[$name]['expire'] = $expire;
+		$this->_cookies[$name]['path'] = $path;
+		$this->_cookies[$name]['domain'] = $domain;
+		$this->_cookies[$name]['secure'] = $secure;
+		$this->_cookies[$name]['httponly'] = $httpOnly;
 		
-		return $this->updateHeaders();
+		return $this->_updateHeaders();
 	}
 	
 	/**
@@ -67,19 +79,19 @@ class Cookies {
 	/**
 	 * get a cookie by name
 	 * @param string $name the name of the cookie to return
-	 * @return mixed an array with the cookie data on succes, false if no cookie with name $name was found
+	 * @return mixed an array with the cookie data on succes, null if no cookie with name $name was found
 	 */
 	public function get($name) {
-		if ( ! isset($this->cookieData[$name])) {
-			return false;
+		if ( ! isset($this->_cookieData[$name])) {
+			return null;
 		}
-		return base64_decode($this->cookieData[$name], true);
+		return base64_decode($this->_cookieData[$name], true);
 	}
 	
 	/**
 	 * get a cookie by name and delete cookie
 	 * @param string $name the name of the cookie to return
-	 * @return mixed an array with the cookie data on succes, false if no cookie with name $name was found
+	 * @return mixed an array with the cookie data on succes, null if no cookie with name $name was found
 	 */
 	public function getFlash($path = '', $domain = '') {
 		$cookieData = $this->get('flash');
@@ -96,26 +108,26 @@ class Cookies {
 	 * @warning $path should be set equel to the $path used to set the cookie for the browser to actually delete the cookie
 	 */
 	public function delete($name, $path = '',  $domain = '') {
-		if ( ! isset($this->cookieData[$name])) { // cookie not set on client -> no need to delete it
+		if ( ! isset($this->_cookieData[$name])) { // cookie not set on client -> no need to delete it
 			return false;
 		}
-		if ( ! isset($this->cookies[$name])) {
-			$this->cookies[$name]['secure'] = false;
-			$this->cookies[$name]['httponly'] = false;
-			$this->cookies[$name]['path'] = $path;
-			$this->cookies[$name]['domain'] = $domain;
+		if ( ! isset($this->_cookies[$name])) {
+			$this->_cookies[$name]['secure'] = false;
+			$this->_cookies[$name]['httponly'] = false;
+			$this->_cookies[$name]['path'] = $path;
+			$this->_cookies[$name]['domain'] = $domain;
 		} else {
 			if ( ! empty($path)) {
-				$this->cookies[$name]['path'] = $path;
+				$this->_cookies[$name]['path'] = $path;
 			}
 			if ( ! empty($domain)) {
-				$this->cookies[$name]['domain'] = $domain;
+				$this->_cookies[$name]['domain'] = $domain;
 			}
 		}
-		$this->cookies[$name]['value'] = 'deleted';
-		$this->cookies[$name]['expire'] = 0;
+		$this->_cookies[$name]['value'] = 'deleted';
+		$this->_cookies[$name]['expire'] = 0;
 		
-		return $this->updateHeaders();
+		return $this->_updateHeaders();
 	}
 	
 	
@@ -123,9 +135,9 @@ class Cookies {
 	 * Send out the cookie headers
 	 * @return bool true
 	 */
-	private function updateHeaders() {
+	private function _updateHeaders() {
 		$replace = true;
-		foreach ($this->cookies as $name => $data) {
+		foreach ($this->_cookies as $name => $data) {
 			$headerStr = 'Set-Cookie: '.$name.'='.urlencode($data['value']);
 			if ($data['expire'] !== false) {
 				$headerStr .= '; expires='.date('D, d M Y H:i:s', $data['expire']).' GMT';
@@ -153,13 +165,14 @@ class Cookies {
 	 * private constructor: prevent the use of 'new'
 	 */
 	final private function __construct() {
-		$this->cookieData = $_COOKIE;
+		$this->_cookieData = $_COOKIE;
 		$_COOKIE = array('This variable is managed by the Cookie Object');
 	}
+	
 	/**
 	 * private __clone: prevent object cloning
 	 */
 	final private function __clone() {
+		// deliberately left empty
 	}
 }	
-?>
