@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Cookies;
 
+use ReflectionClass;
 use Netsilik\Lib\Cookies;
 use PHPUnit\Framework\TestCase;
 
@@ -44,7 +45,8 @@ class IsSingletonTest extends TestCase
 		$cookies = Cookies::getInstance();
 		$this->assertInstanceOf(Cookies::class, $cookies);
 		
-		$this->callInaccessibleMethod($cookies, '__clone');
+		$cloned = $this->callInaccessibleMethod($cookies, '__clone');
+		$this->assertNull($cloned);
 	}
 	
     /**
