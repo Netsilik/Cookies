@@ -38,4 +38,28 @@ class IsSingletonTest extends TestCase
 			throw $e;
 		}
 	}
+	
+	public function test_callClose_andExpectNothing()
+    {
+		$cookies = Cookies::getInstance();
+		$this->assertInstanceOf(Cookies::class, $cookies);
+		
+		$this->callInaccessibleMethod($cookies, '__clone');
+	}
+	
+    /**
+     * Call a private or protected method
+     * @param object $instance The instance of the class to call the specified method on
+     * @param string $method The method to call on the provided instance
+     * @param array $parameters The parameters to pass into the specified method
+     * @return mixed
+     */
+    protected function callInaccessibleMethod($instance, $method, array $parameters = [])
+    {
+        $class = new ReflectionClass(get_class($instance));
+        $method = $class->getMethod($method);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($instance, $parameters);
+    }
 }
