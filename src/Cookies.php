@@ -8,11 +8,12 @@ namespace Netsilik\Lib;
  */
 
 /**
- * Fix the cookie handling functions native to PHP
+ * Fix the broken cookie handling functions native to PHP
  * Singleton
  * Controls all cookies
  */
-class Cookies {
+class Cookies
+{
 	
 	/**
 	 * @var Netsilik\Lib\Cookies $_instance
@@ -117,10 +118,10 @@ class Cookies {
 			$this->_cookies[$name]['path'] = $path;
 			$this->_cookies[$name]['domain'] = $domain;
 		} else {
-			if ( ! empty($path)) {
+			if ($path <> '') {
 				$this->_cookies[$name]['path'] = $path;
 			}
-			if ( ! empty($domain)) {
+			if ($domain <> '') {
 				$this->_cookies[$name]['domain'] = $domain;
 			}
 		}
