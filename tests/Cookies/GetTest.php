@@ -20,7 +20,7 @@ class GetTest extends TestCase
      */
 	public function test_getNonExisting_returnsNull()
     {
-		$this->assertNUll($this->_cookies->get('nonExisting'));
+		$this->assertNull($this->_cookies->get('nonExisting'));
 	}
 	
 	/**
