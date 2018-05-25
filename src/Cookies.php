@@ -43,38 +43,41 @@ class Cookies
 	
 	/**
 	 * set a cookie by name
-	 * @param string name The name of the cookie.
-	 * @param string value The value of the cookie.
-	 * @param int expire The time the cookie expires. This is a Unix timestamp so is in number of seconds since the epoch. If set to 0, or omitted, the cookie will expire at the end of the session (when the browser closes). Expire is compared to the client's time which can differ from server's time.
-	 * @param string path The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain. If set to '/foo/', the cookie will only be available within the /foo/ directory and all sub-directories such as /foo/bar/ of domain. The default value is the current directory that the cookie is being set in.
-	 * @param string domain The domain that the cookie is available. To make the cookie available on all subdomains of example.com then you'd set it to '.example.com'. The . is not required but makes it compatible with more browsers. Setting it to www.example.com will make the cookie only available in the www subdomain. Refer to tail matching in the » spec for details.
-	 * @param bool secure Indicates that the cookie should only be transmitted over a secure HTTPS connection from the client. When set to true, the cookie will only be set if a secure connection exists. On the server-side, it's on the programmer to send this kind of cookie only on secure connection (e.g. with respect to $_SERVER["HTTPS"]).
-	 * @param bool httponly When true the cookie will be made accessible only through the HTTP protocol. This means that the cookie won't be accessible by scripting languages, such as JavaScript. This setting can effectively help to reduce identity theft through XSS attacks (although it is not supported by all browsers).
+	 * @param string $name The name of the cookie.
+	 * @param string $value The value of the cookie.
+	 * @param int $expire The time the cookie expires. This is a Unix timestamp so is in number of seconds since the epoch. If set to 0, or omitted, the cookie will expire at the end of the session (when the browser closes). Expire is compared to the client's time which can differ from server's time.
+	 * @param string $path The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain. If set to '/foo/', the cookie will only be available within the /foo/ directory and all sub-directories such as /foo/bar/ of domain. The default value is the current directory that the cookie is being set in.
+	 * @param string $domain The domain that the cookie is available. To make the cookie available on all subdomains of example.com then you'd set it to '.example.com'. The . is not required but makes it compatible with more browsers. Setting it to www.example.com will make the cookie only available in the www subdomain. Refer to tail matching in the Â» spec for details.
+	 * @param bool $secure Indicates that the cookie should only be transmitted over a secure HTTPS connection from the client. When set to true, the cookie will only be set if a secure connection exists. On the server-side, it's on the programmer to send this kind of cookie only on secure connection (e.g. with respect to $_SERVER["HTTPS"]).
+	 * @param bool $httponly When true the cookie will be made accessible only through the HTTP protocol. This means that the cookie won't be accessible by scripting languages, such as JavaScript. This setting can effectively help to reduce identity theft through XSS attacks (although it is not supported by all browsers).
+	 * @param bool $sameSite Optional value. Possible values: [any|'lax'|'strict']. In Any mode, the cookie beheviour is unrestricted. In lax mode, some cross-site usage is allowed. Specifically for GET request that changes the URL in the browser address bar. In the strict mode, the cookie is withheld with any cross-site usage. Even when the user follows a link to another website the cookie is not sent.
 	 * @return bool true on succes
 	 * @note if this method returns true, php did not encounter any problems. This does not mean the cookie is accepted by the browser
 	 */
-	public function set($name, $value = '', $expire = false, $path = '', $domain = '', $secure = false, $httpOnly = false) {
+	public function set($name, $value = '', $expire = false, $path = '', $domain = '', $secure = false, $httpOnly = false, $sameSite = 'any') {
 		$this->_cookies[$name]['value'] = base64_encode($value);
 		$this->_cookies[$name]['expire'] = $expire;
 		$this->_cookies[$name]['path'] = $path;
 		$this->_cookies[$name]['domain'] = $domain;
 		$this->_cookies[$name]['secure'] = $secure;
-		$this->_cookies[$name]['httponly'] = $httpOnly;
+		$this->_cookies[$name]['httpOnly'] = $httpOnly;
+		$this->_cookies[$name]['sameSite'] = ($sameSite === 'strict' ? 'Strict' : ($sameSite === 'lax' ? 'Lax' : 'Any'));
 		
 		return $this->_updateHeaders();
 	}
 	
 	/**
 	 * Set a flash cookie
-	 * @param string value The value of the cookie.
-	 * @param string path The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain. If set to '/foo/', the cookie will only be available within the /foo/ directory and all sub-directories such as /foo/bar/ of domain. The default value is the current directory that the cookie is being set in.
-	 * @param string domain The domain that the cookie is available. To make the cookie available on all subdomains of example.com then you'd set it to '.example.com'. The . is not required but makes it compatible with more browsers. Setting it to www.example.com will make the cookie only available in the www subdomain. Refer to tail matching in the » spec for details.
-	 * @param bool secure Indicates that the cookie should only be transmitted over a secure HTTPS connection from the client. When set to true, the cookie will only be set if a secure connection exists. On the server-side, it's on the programmer to send this kind of cookie only on secure connection (e.g. with respect to $_SERVER["HTTPS"]).
-	 * @param bool httponly When true the cookie will be made accessible only through the HTTP protocol. This means that the cookie won't be accessible by scripting languages, such as JavaScript. This setting can effectively help to reduce identity theft through XSS attacks (although it is not supported by all browsers).
+	 * @param string $value The value of the cookie.
+	 * @param string $path The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain. If set to '/foo/', the cookie will only be available within the /foo/ directory and all sub-directories such as /foo/bar/ of domain. The default value is the current directory that the cookie is being set in.
+	 * @param string $domain The domain that the cookie is available. To make the cookie available on all subdomains of example.com then you'd set it to '.example.com'. The . is not required but makes it compatible with more browsers. Setting it to www.example.com will make the cookie only available in the www subdomain. Refer to tail matching in the Â» spec for details.
+	 * @param bool $secure Indicates that the cookie should only be transmitted over a secure HTTPS connection from the client. When set to true, the cookie will only be set if a secure connection exists. On the server-side, it's on the programmer to send this kind of cookie only on secure connection (e.g. with respect to $_SERVER["HTTPS"]).
+	 * @param bool $httponly When true the cookie will be made accessible only through the HTTP protocol. This means that the cookie won't be accessible by scripting languages, such as JavaScript. This setting can effectively help to reduce identity theft through XSS attacks (although it is not supported by all browsers).
+	 * @param bool $sameSite Optional value. Possible values: [any|'lax'|'strict']. In Any mode, the cookie beheviour is unrestricted. In lax mode, some cross-site usage is allowed. Specifically for GET request that changes the URL in the browser address bar. In the strict mode, the cookie is withheld with any cross-site usage. Even when the user follows a link to another website the cookie is not sent.
 	 * @return bool true on succes
 	 */
-	public function setFlash($value = '', $path = '', $domain = '', $secure = false, $httpOnly = false) {
-		return $this->set('flash', $value, false, $path, $domain, $secure, $httpOnly);
+	public function setFlash($value = '', $path = '', $domain = '', $secure = false, $httpOnly = false, $sameSite = 'any') {
+		return $this->set('flash', $value, false, $path, $domain, $secure, $httpOnly, $sameSite);
 	}
 	
 	/**
@@ -114,7 +117,8 @@ class Cookies
 		}
 		if ( ! isset($this->_cookies[$name])) {
 			$this->_cookies[$name]['secure'] = false;
-			$this->_cookies[$name]['httponly'] = false;
+			$this->_cookies[$name]['httpOnly'] = false;
+			$this->_cookies[$name]['sameSite'] = 'Any';
 			$this->_cookies[$name]['path'] = $path;
 			$this->_cookies[$name]['domain'] = $domain;
 		} else {
@@ -152,8 +156,11 @@ class Cookies
 			if ($data['secure']) {
 				$headerStr .= '; secure';
 			}
-			if ($data['httponly']) {
+			if ($data['httpOnly']) {
 				$headerStr .= '; httponly';
+			}
+			if ($data['sameSite']) {
+				$headerStr .= '; SameSite='.$data['sameSite'];
 			}
 			header($headerStr, $replace);
 			$replace = false;
