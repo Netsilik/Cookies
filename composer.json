@@ -19,6 +19,6 @@
         "phpunit/phpunit": "^6.1"
     },
     "autoload": {
-        "psr-4": { "Netsilik\\Lib\\": "src/" }
+        "psr-4": { "Netsilik\\Cookies\\": "src/" }
     }
 }
