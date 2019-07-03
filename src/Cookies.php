@@ -67,20 +67,6 @@ class Cookies
 	}
 	
 	/**
-	 * Set a flash cookie
-	 * @param string $value The value of the cookie.
-	 * @param string $path The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain. If set to '/foo/', the cookie will only be available within the /foo/ directory and all sub-directories such as /foo/bar/ of domain. The default value is the current directory that the cookie is being set in.
-	 * @param string $domain The domain that the cookie is available. To make the cookie available on all subdomains of example.com then you'd set it to '.example.com'. The . is not required but makes it compatible with more browsers. Setting it to www.example.com will make the cookie only available in the www subdomain. Refer to tail matching in the » spec for details.
-	 * @param bool $secure Indicates that the cookie should only be transmitted over a secure HTTPS connection from the client. When set to true, the cookie will only be set if a secure connection exists. On the server-side, it's on the programmer to send this kind of cookie only on secure connection (e.g. with respect to $_SERVER["HTTPS"]).
-	 * @param bool $httponly When true the cookie will be made accessible only through the HTTP protocol. This means that the cookie won't be accessible by scripting languages, such as JavaScript. This setting can effectively help to reduce identity theft through XSS attacks (although it is not supported by all browsers).
-	 * @param bool $sameSite Optional value. Possible values: [any|'lax'|'strict']. In Any mode, the cookie beheviour is unrestricted. In lax mode, some cross-site usage is allowed. Specifically for GET request that changes the URL in the browser address bar. In the strict mode, the cookie is withheld with any cross-site usage. Even when the user follows a link to another website the cookie is not sent.
-	 * @return bool true on succes
-	 */
-	public function setFlash($value = '', $path = '', $domain = '', $secure = false, $httpOnly = false, $sameSite = 'any') {
-		return $this->set('flash', $value, false, $path, $domain, $secure, $httpOnly, $sameSite);
-	}
-	
-	/**
 	 * get a cookie by name
 	 * @param string $name the name of the cookie to return
 	 * @return mixed an array with the cookie data on succes, null if no cookie with name $name was found
@@ -90,17 +76,6 @@ class Cookies
 			return null;
 		}
 		return base64_decode($this->_cookieData[$name], true);
-	}
-	
-	/**
-	 * get a cookie by name and delete cookie
-	 * @param string $name the name of the cookie to return
-	 * @return mixed an array with the cookie data on succes, null if no cookie with name $name was found
-	 */
-	public function getFlash($path = '', $domain = '') {
-		$cookieData = $this->get('flash');
-		$this->delete('flash', $path, $domain);
-		return $cookieData;
 	}
 	
 	/**
