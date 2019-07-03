@@ -1,5 +1,8 @@
 <?php
-namespace Netsilik\Lib;
+namespace Netsilik\Cookies;
+
+use \InvalidArgumentException;
+
 
 /**
  * @package       Scepino\Lib
@@ -16,36 +19,12 @@ class Cookies
 {
 	
 	/**
-	 * @var Netsilik\Lib\Cookies $_instance
-	 */
-	private static $_instance;
-	
-	/**
 	 * @var array $_cookies The cookies to send
 	 */
 	private $_cookies;
 	
 	/**
-	 * @var Netsilik\Lib\Cookies $_instance The cookies received
-	 */
-	private $_cookieData;
-	
-	/**
-	 * Get the (static) instance of this object
-	 *
-	 * @return Object static instance of class Config
-	 */
-	public static function getInstance()
-	{
-		if (is_null(self::$_instance)) {
-			self::$_instance = new Cookies();
-		}
-		
-		return self::$_instance;
-	}
-	
-	/**
-	 * set a cookie by name
+	 * Set a cookie by name
 	 *
 	 * @param string $name     The name of the cookie.
 	 * @param string $value    The value of the cookie.
@@ -65,23 +44,30 @@ class Cookies
 	 * @param bool   $httponly When true the cookie will be made accessible only through the HTTP protocol. This means that the cookie won't be
 	 *                         accessible by scripting languages, such as JavaScript. This setting can effectively help to reduce identity theft
 	 *                         through XSS attacks (although it is not supported by all browsers).
-	 * @param bool   $sameSite Optional value. Possible values: [any|'lax'|'strict']. In Any mode, the cookie beheviour is unrestricted. In lax mode,
+	 * @param string $sameSite Optional value. Possible values: [any|'lax'|'strict']. In Any mode, the cookie beheviour is unrestricted. In lax mode,
 	 *                         some cross-site usage is allowed. Specifically for GET request that changes the URL in the browser address bar. In the
 	 *                         strict mode, the cookie is withheld with any cross-site usage. Even when the user follows a link to another website
 	 *                         the cookie is not sent.
 	 *
-	 * @return bool true on succes
-	 * @note if this method returns true, php did not encounter any problems. This does not mean the cookie is accepted by the browser
+	 * @return bool            True if  php did not encounter any problems. This does not mean the cookie is accepted by the browser!
+	 * @throws \InvalidArgumentException
 	 */
-	public function set($name, $value = '', $expire = false, $path = '', $domain = '', $secure = false, $httpOnly = false, $sameSite = 'any')
+	public function set(string $name, string $value, bool $expire = false, string $path = '', string $domain = '', bool $secure = false, bool $httpOnly = false, $sameSite = 'any') : bool
 	{
+		$sameSite = ucfirst(strtolower($sameSite));
+		if (!in_array($sameSite, ['Any', 'Lax', 'Strict'])) {
+			throw new InvalidArgumentException('Value for parameter $sameSite should be one of [Any | Lax | Strict]');
+		}
+		
 		$this->_cookies[ $name ]['value']    = base64_encode($value);
 		$this->_cookies[ $name ]['expire']   = $expire;
 		$this->_cookies[ $name ]['path']     = $path;
 		$this->_cookies[ $name ]['domain']   = $domain;
 		$this->_cookies[ $name ]['secure']   = $secure;
 		$this->_cookies[ $name ]['httpOnly'] = $httpOnly;
-		$this->_cookies[ $name ]['sameSite'] = ($sameSite === 'strict' ? 'Strict' : ($sameSite === 'lax' ? 'Lax' : 'Any'));
+		$this->_cookies[ $name ]['sameSite'] = $sameSite;
+		
+		$_COOKIE[ $name ] = $this->_cookies[ $name ]['value'];
 		
 		return $this->_updateHeaders();
 	}
@@ -91,15 +77,15 @@ class Cookies
 	 *
 	 * @param string $name the name of the cookie to return
 	 *
-	 * @return mixed an array with the cookie data on succes, null if no cookie with name $name was found
+	 * @return mixed an array with the cookie data on success, null if no cookie with name $name was found
 	 */
 	public function get($name)
 	{
-		if (!isset($this->_cookieData[ $name ])) {
+		if (!isset($_COOKIE[ $name ])) {
 			return null;
 		}
 		
-		return base64_decode($this->_cookieData[ $name ], true);
+		return base64_decode($_COOKIE[ $name ], true);
 	}
 	
 	/**
@@ -114,7 +100,7 @@ class Cookies
 	 */
 	public function delete($name, $path = '', $domain = '')
 	{
-		if (!isset($this->_cookieData[ $name ])) { // cookie not set on client -> no need to delete it
+		if (!isset($_COOKIE[ $name ])) { // cookie not set on client -> no need to delete it
 			return false;
 		}
 		if (!isset($this->_cookies[ $name ])) {
@@ -144,8 +130,13 @@ class Cookies
 	 */
 	private function _updateHeaders()
 	{
-		$replace = true;
+		$cookieSet = [];
 		foreach ($this->_cookies as $name => $data) {
+			if (isset($cookieSet[ $name ])) {
+				continue;
+			}
+			$cookieSet[ $name ] = true;
+			
 			$headerStr = 'Set-Cookie: ' . $name . '=' . urlencode($data['value']);
 			if ($data['expire'] !== false) {
 				$headerStr .= '; expires=' . date('D, d M Y H:i:s', $data['expire']) . ' GMT';
@@ -165,27 +156,9 @@ class Cookies
 			if ($data['sameSite']) {
 				$headerStr .= '; SameSite=' . $data['sameSite'];
 			}
-			header($headerStr, $replace);
-			$replace = false;
+			header($headerStr, true); // Replace any cookies set by a previous call to this function
 		}
 		
 		return true;
 	}
-	
-	/**
-	 * private constructor: prevent the use of 'new'
-	 */
-	final private function __construct()
-	{
-		$this->_cookieData = $_COOKIE;
-		$_COOKIE           = ['This variable is managed by the Cookie Object'];
-	}
-	
-	/**
-	 * private __clone: prevent object cloning
-	 */
-	final private function __clone()
-	{
-		// deliberately left empty
-	}
-}	
+}
