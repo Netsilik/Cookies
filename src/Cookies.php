@@ -59,7 +59,7 @@ class Cookies
 			throw new InvalidArgumentException('Value for parameter $sameSite should be one of [Any | Lax | Strict]');
 		}
 		
-		$this->_cookies[ $name ]['value']    = base64_encode($value);
+		$this->_cookies[ $name ]['value']    = $value;
 		$this->_cookies[ $name ]['expire']   = $expire;
 		$this->_cookies[ $name ]['path']     = $path;
 		$this->_cookies[ $name ]['domain']   = $domain;
@@ -85,7 +85,7 @@ class Cookies
 			return null;
 		}
 		
-		return base64_decode($_COOKIE[ $name ], true);
+		return $_COOKIE[ $name ];
 	}
 	
 	/**
