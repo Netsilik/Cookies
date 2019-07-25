@@ -139,7 +139,7 @@ class Cookies
 			
 			$headerStr = 'Set-Cookie: ' . $name . '=' . urlencode($data['value']);
 			if ($data['expire'] !== false) {
-				$headerStr .= '; expires=' . date('D, d M Y H:i:s', $data['expire']) . ' GMT';
+				$headerStr .= '; expires=' . gmdate('D, d M Y H:i:s', $data['expire']) . ' GMT';
 			}
 			if (!empty($data['path'])) {
 				$headerStr .= '; path=' . $data['path'];
