@@ -52,7 +52,7 @@ class Cookies
 	 * @return bool            True if  php did not encounter any problems. This does not mean the cookie is accepted by the browser!
 	 * @throws \InvalidArgumentException
 	 */
-	public function set(string $name, string $value, bool $expire = false, string $path = '', string $domain = '', bool $secure = false, bool $httpOnly = false, $sameSite = 'any') : bool
+	public function set(string $name, string $value, int $expire = null, string $path = '', string $domain = '', bool $secure = false, bool $httpOnly = false, $sameSite = 'any') : bool
 	{
 		$sameSite = ucfirst(strtolower($sameSite));
 		if (!in_array($sameSite, ['Any', 'Lax', 'Strict'])) {
@@ -138,7 +138,7 @@ class Cookies
 			$cookieSet[ $name ] = true;
 			
 			$headerStr = 'Set-Cookie: ' . $name . '=' . urlencode($data['value']);
-			if ($data['expire'] !== false) {
+			if (null !== $data['expire']) {
 				$headerStr .= '; expires=' . gmdate('D, d M Y H:i:s', $data['expire']) . ' GMT';
 			}
 			if (!empty($data['path'])) {
