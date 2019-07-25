@@ -130,13 +130,8 @@ class Cookies
 	 */
 	private function _updateHeaders()
 	{
-		$cookieSet = [];
+		$replace = true;
 		foreach ($this->_cookies as $name => $data) {
-			if (isset($cookieSet[ $name ])) {
-				continue;
-			}
-			$cookieSet[ $name ] = true;
-			
 			$headerStr = 'Set-Cookie: ' . $name . '=' . urlencode($data['value']);
 			if (null !== $data['expire']) {
 				$headerStr .= '; expires=' . gmdate('D, d M Y H:i:s', $data['expire']) . ' GMT';
@@ -156,7 +151,9 @@ class Cookies
 			if ($data['sameSite']) {
 				$headerStr .= '; SameSite=' . $data['sameSite'];
 			}
-			header($headerStr, true); // Replace any cookies set by a previous call to this function
+			
+			header($headerStr, $replace); // Replace all cookies headers on the first run, append after that
+			$replace = false;
 		}
 		
 		return true;
