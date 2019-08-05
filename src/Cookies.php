@@ -100,9 +100,6 @@ class Cookies
 	 */
 	public function delete($name, $path = '', $domain = '')
 	{
-		if (!isset($_COOKIE[ $name ])) { // cookie not set on client -> no need to delete it
-			return false;
-		}
 		if (!isset($this->_cookies[ $name ])) {
 			$this->_cookies[ $name ]['secure']   = false;
 			$this->_cookies[ $name ]['httpOnly'] = false;
