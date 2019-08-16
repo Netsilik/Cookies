@@ -1,18 +1,18 @@
 <?php
 namespace Tests\Cookies;
 
-use Netsilik\Lib\Cookies;
+use Netsilik\Cookies\Cookies;
 use PHPUnit\Framework\TestCase;
 
 class GetTest extends TestCase
 {
 	private $_cookies;
 
-	public function setUp()
+	public function setUp() : void
 	{
-		$_COOKIE['First'] = 'c29tZSB2YWx1ZQ=='; // some value
-		$_COOKIE['Second'] = 'c29tZSBvdGhlciB2YWx1ZQ=='; // some other value
-		$this->_cookies = Cookies::getInstance();
+		$_COOKIE['First'] = 'some value'; // some value
+		$_COOKIE['Second'] = 'some other value'; // some other value
+		$this->_cookies = new Cookies();
 	}
 	
 	/**

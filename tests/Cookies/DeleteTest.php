@@ -1,12 +1,12 @@
 <?php
 namespace Tests\Cookies;
 
-use Netsilik\Lib\Cookies;
+use Netsilik\Cookies\Cookies;
 use PHPUnit\Framework\TestCase;
 
 class DeleteTest extends TestCase
 {
-	public static function setUpBeforeClass()
+	 public static function setUpBeforeClass(): void
 	{
 		self::assertTrue(function_exists('xdebug_get_headers'));
 	}
@@ -16,7 +16,7 @@ class DeleteTest extends TestCase
      */
 	public function test_getNonExisting_returnsNull()
     {
-		$cookies = Cookies::getInstance();
+		$cookies = new Cookies();
 		
 		$this->assertFalse($cookies->delete('nonExisting'));
 	}
@@ -26,18 +26,18 @@ class DeleteTest extends TestCase
      */
 	public function test_getExistingCookie_returnsTrueAndHeadersCorrectlyUpdated()
     {
-		$_COOKIE['First'] = 'c29tZSB2YWx1ZQ=='; // some value
-		$cookies = Cookies::getInstance();
+		$_COOKIE['First'] = 'some+other+value'; // some value
+		$cookies = new Cookies();
 		
 		$this->assertTrue($cookies->set('First', 'some other value', false, '/', 'example.com'));
 		$this->assertEquals([
-			0 => 'Set-Cookie: First=c29tZSBvdGhlciB2YWx1ZQ%3D%3D; path=/; domain=example.com' // deleted
+			0 => 'Set-Cookie: First=some+other+value; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=example.com; SameSite=Any' // deleted
 		], xdebug_get_headers());
 		
 		
 		$this->assertTrue($cookies->delete('First', '/', 'example.com'));
 		$this->assertEquals([
-			0 => 'Set-Cookie: First=deleted; expires=Thu, 01 Jan 1970 01:00:00 GMT; path=/; domain=example.com' // deleted
+			0 => 'Set-Cookie: First=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=example.com; SameSite=Any' // deleted
 		], xdebug_get_headers());
 	}
 }

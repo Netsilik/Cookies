@@ -14,11 +14,18 @@
     ],
     "require": {
         "php": "^7.3"
-    },
+	},
     "require-dev": {
-        "phpunit/phpunit": "^6.1"
+        "phpunit/phpunit": "^8.2"
     },
     "autoload": {
-        "psr-4": { "Netsilik\\Cookies\\": "src/" }
-    }
+        "psr-4": {
+            "Netsilik\\Cookies\\": "src/"
+        }
+    },
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\": "tests/"
+		}
+	}
 }
