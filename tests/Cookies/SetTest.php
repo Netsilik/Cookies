@@ -1,21 +1,21 @@
 <?php
 namespace Tests\Cookies;
 
-use Netsilik\Lib\Cookies;
+use Netsilik\Cookies\Cookies;
 use PHPUnit\Framework\TestCase;
 
 class SetTest extends TestCase
 {
 	private $_cookies;
 	
-	public static function setUpBeforeClass()
+	public static function setUpBeforeClass() : void
 	{
 		self::assertTrue(function_exists('xdebug_get_headers'));
 	}
 
-	public function setUp()
+	public function setUp() : void
 	{
-		$this->_cookies = Cookies::getInstance();
+		$this->_cookies = new Cookies();
 	}
 	
 	/**
@@ -25,7 +25,7 @@ class SetTest extends TestCase
     {
 		$this->assertTrue($this->_cookies->set('Test', 'some value'));
 		$this->assertEquals([
-			0 => 'Set-Cookie: Test=c29tZSB2YWx1ZQ%3D%3D'
+			0 => 'Set-Cookie: Test=some+value; SameSite=Any'
 		], xdebug_get_headers());
 	}
 	
@@ -36,7 +36,7 @@ class SetTest extends TestCase
     {
 		$this->assertTrue($this->_cookies->set('Test', 'some value', 1577836800));
 		$this->assertEquals([
-			0 => 'Set-Cookie: Test=c29tZSB2YWx1ZQ%3D%3D; expires=Wed, 01 Jan 2020 01:00:00 GMT'
+			0 => 'Set-Cookie: Test=some+value; expires=Wed, 01 Jan 2020 00:00:00 GMT; SameSite=Any'
 		], xdebug_get_headers());
 	}
 	
@@ -47,7 +47,7 @@ class SetTest extends TestCase
     {
 		$this->assertTrue($this->_cookies->set('Test', 'some value', false, '/test/'));
 		$this->assertEquals([
-			0 => 'Set-Cookie: Test=c29tZSB2YWx1ZQ%3D%3D; path=/test/'
+			0 => 'Set-Cookie: Test=some+value; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/test/; SameSite=Any'
 		], xdebug_get_headers());
 	}
 	
@@ -58,7 +58,7 @@ class SetTest extends TestCase
     {
 		$this->assertTrue($this->_cookies->set('Test', 'some value', false, '', 'example.com'));
 		$this->assertEquals([
-			0 => 'Set-Cookie: Test=c29tZSB2YWx1ZQ%3D%3D; domain=example.com'
+			0 => 'Set-Cookie: Test=some+value; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=example.com; SameSite=Any'
 		], xdebug_get_headers());
 	}
 	
@@ -69,7 +69,7 @@ class SetTest extends TestCase
     {
 		$this->assertTrue($this->_cookies->set('Test', 'some value', false, '', '', true));
 		$this->assertEquals([
-			0 => 'Set-Cookie: Test=c29tZSB2YWx1ZQ%3D%3D; secure'
+			0 => 'Set-Cookie: Test=some+value; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; SameSite=Any'
 		], xdebug_get_headers());
 	}
 	
@@ -80,7 +80,7 @@ class SetTest extends TestCase
     {
 		$this->assertTrue($this->_cookies->set('Test', 'some value', false, '', '', false, true));
 		$this->assertEquals([
-			0 => 'Set-Cookie: Test=c29tZSB2YWx1ZQ%3D%3D; httponly'
+			0 => 'Set-Cookie: Test=some+value; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly; SameSite=Any'
 		], xdebug_get_headers());
 	}
 	
@@ -92,8 +92,8 @@ class SetTest extends TestCase
 		$this->assertTrue($this->_cookies->set('First', 'some value'));
 		$this->assertTrue($this->_cookies->set('Second', 'some other value'));
 		$this->assertEquals([
-			0 => 'Set-Cookie: First=c29tZSB2YWx1ZQ%3D%3D', // some value
-			1 => 'Set-Cookie: Second=c29tZSBvdGhlciB2YWx1ZQ%3D%3D',  // some other value
+			0 => 'Set-Cookie: First=some+value; SameSite=Any', // some value
+			1 => 'Set-Cookie: Second=some+other+value; SameSite=Any',  // some other value
 		], xdebug_get_headers());
 	}
 	
@@ -105,7 +105,7 @@ class SetTest extends TestCase
 		$this->assertTrue($this->_cookies->set('Test', 'first cookie value'));
 		$this->assertTrue($this->_cookies->set('Test', 'second cookie value'));
 		$this->assertEquals([
-			0 => 'Set-Cookie: Test=c2Vjb25kIGNvb2tpZSB2YWx1ZQ%3D%3D' // second cookie value
+			0 => 'Set-Cookie: Test=second+cookie+value; SameSite=Any' // second cookie value
 		], xdebug_get_headers());
 	}
 }
