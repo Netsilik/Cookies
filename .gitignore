@@ -1,2 +1,9 @@
-/vendor
-/report
+# PHPStorm
+/.idea/*
+
+# PhpUnit Cache and Reporting
+/report/
+/cache/
+
+# Composer (Third party packages)
+/vendor/
