@@ -32,7 +32,7 @@ interface iCookies
 	 * @param bool   $httponly When true the cookie will be made accessible only through the HTTP protocol. This means that the cookie won't be
 	 *                         accessible by scripting languages, such as JavaScript. This setting can effectively help to reduce identity theft
 	 *                         through XSS attacks (although it is not supported by all browsers).
-	 * @param string $sameSite Optional value. Possible values: [any|'lax'|'strict']. In Any mode, the cookie beheviour is unrestricted. In lax mode,
+	 * @param string $sameSite Optional value. Possible values: ['None'|'Lax'|'Strict']. In None mode, the cookie behaviour is unrestricted. In lax mode,
 	 *                         some cross-site usage is allowed. Specifically for GET request that changes the URL in the browser address bar. In the
 	 *                         strict mode, the cookie is withheld with any cross-site usage. Even when the user follows a link to another website
 	 *                         the cookie is not sent.

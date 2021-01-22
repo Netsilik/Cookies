@@ -30,8 +30,8 @@ class Cookies implements iCookies
 	public function set(string $name, string $value, int $expire = null, string $path = '', string $domain = '', bool $secure = false, bool $httpOnly = false, $sameSite = 'any') : bool
 	{
 		$sameSite = ucfirst(strtolower($sameSite));
-		if (!in_array($sameSite, ['Any', 'Lax', 'Strict'])) {
-			throw new InvalidArgumentException('Value for parameter $sameSite should be one of [Any | Lax | Strict]');
+		if (!in_array($sameSite, ['None', 'Lax', 'Strict'])) {
+			throw new InvalidArgumentException('Value for parameter $sameSite should be one of [None | Lax | Strict]');
 		}
 		
 		$this->_cookies[ $name ]['value']    = $value;
